@@ -23,7 +23,7 @@ Link :
 
 ### Proxy Server
 
-[7](#7). Menambahkan user autentifikasi, user autentikasi milik Anri memiliki format: </br>
+7. Menambahkan user autentifikasi, user autentikasi milik Anri memiliki format: </br>
 
 | User        | Password          |    
 | :-:         | :-:               |
