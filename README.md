@@ -5,7 +5,8 @@ Nama Anggota :
 - 05111740000091 Affan Ahsanul Habib
 
 Link :
-[7](#7)
+[DHCP](#dhcp)
+[Proxy Server](#proxy-server)
 
 ### DHCP
 
