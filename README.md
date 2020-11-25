@@ -25,17 +25,24 @@ Link :
 ### Proxy Server
 
 7. Menambahkan user autentifikasi, user autentikasi milik Anri memiliki format: </br>
+
 | User        | Password          |    
 | :-:         | :-:               |
 | userta_yyy  | inipassw0rdta_yyy |
+
 </br>
+
 Jawab : </br>
+
 **Pada UML MOJOKERTO** </br>
+
 a. Jalankan perintah `apt-get install apache2-utils` </br>
-b. Jalankan perintah htpasswd `-c /etc/squid/passwd userta_d01` </br>
+
+b. Jalankan perintah `htpasswd -c /etc/squid/passwd userta_d01` </br>
+
 c. Masukkan password `inipassw0rdta_d01` </br>
-d. Tambahkan konfigurasi pada file /etc/squid/squid.conf
-</br>
+
+d. Tambahkan konfigurasi pada file /etc/squid/squid.conf</br>
 
 ```
 acl all src 0.0.0.0/0.0.0.0
@@ -57,23 +64,27 @@ http_access allow USERS JADWALSEMM !REDIRECT
 ```
 
 </br>
+
 e. Jalankan perintah `service squid restart` </br>
+
 f. Testing </br>
 
 </br>
 8. Setiap hari Selasa-Rabu pukul 13.00-18.00. Bu Meguri membatasi penggunaan internet Anri hanya pada jadwal yang telah ditentukan itu saja. Maka diluar jam tersebut, Anri tidak dapat mengakses jaringan internet dengan proxy tersebut. </br>
+
 Jawab : </br>
+
 **Pada UML MOJOKERTO** </br>
-a. Tambahkan konfigurasi pada file /etc/squid/acl.conf 
-</br>
+
+a. Tambahkan konfigurasi pada file /etc/squid/acl.conf </br>
 
 ```
 acl JADWALDEL time TW 13:00-18:00
 ```
 
 </br>
-b. Tambahkan konfigurasi pada file /etc/squid/squid.conf 
-</br>
+
+b. Tambahkan konfigurasi pada file /etc/squid/squid.conf </br>
 
 ```
 include /etc/squid/acl.conf
@@ -81,14 +92,18 @@ http_access allow USERS JADWALDEL !REDIRECT # konfigurasi sudah ditambahkan pada
 ```
 
 </br>
+
 c. Jalankan perintah `service squid restart` </br>
+
 d. Testing </br>
 
 9. Jadwal bimbingan dengan Bu Meguri adalah setiap hari Selasa-Kamis pukul 21.00 - 09.00 keesokan harinya (sampai Jumat jam 09.00). </br>
+
 Jawab : </br>
+
 **Pada UML MOJOKERTO** </br>
-a. Tambahkan pada file /etc/squid/acl.conf 
-</br>
+
+a. Tambahkan konfigurasi pada file /etc/squid/acl.conf </br>
 
 ```
 acl JADWALSEM time TWH 21:00-23:59
@@ -96,8 +111,8 @@ acl JADWALSEMM time WHF 00:00-09:00
 ```
 
 </br>
-b. Tambahkan pada file /etc/squid/squid.conf 
-</br>
+
+b. Tambahkan konfigurasi pada file /etc/squid/squid.conf </br>
 
 ```
 http_access allow USERS JADWALSEM !REDIRECT  # konfigurasi sudah ditambahkan pada nomor 7
@@ -105,22 +120,26 @@ http_access allow USERS JADWALSEMM !REDIRECT # konfigurasi sudah ditambahkan pad
 ```
 
 </br>
+
 c. Jalankan perintah `service squid restart` </br>
+
 d. Testing </br>
 
 10. Agar Anri bisa fokus mengerjakan TA, setiap dia mengakses google.com, maka akan di redirect menuju monta.if.its.ac.id agar Anri selalu ingat untuk mengerjakan TA </br>
+
 Jawab : </br>
+
 **Pada UML MOJOKERTO** </br>
-a. Tambahkan pada file /etc/squid/ban.acl 
-</br>
+
+a. Tambahkan konfigurasi pada file /etc/squid/ban.acl </br>
 
 ```
 google.com
 ```
 
 </br>
-b. Tambahkan pada file /etc/squid/squid.conf 
-</br>
+
+b. Tambahkan konfigurasi pada file /etc/squid/squid.conf </br>
 
 ```
 acl REDIRECT url_regex "/etc/squid/ban.acl"
@@ -128,34 +147,46 @@ deny_info http://monta.if.its.ac.id/ REDIRECT
 ```
 
 </br>
+
 c. Jalankan perintah `service squid restart` </br>
+
 d. Testing </br>
 
 11. Untuk menandakan bahwa Proxy Server ini adalah Proxy yang dibuat oleh Anri, (11) Bu Meguri meminta Anri untuk mengubah error page default squid menjadi seperti berikut: </br>
+
 Note : File error page bisa diunduh dengan cara wget 10.151.36.202/ERR_ACCESS_DENIED, Tidak perlu di extract, cukup cp -r </br>
 
+Jawab : </br>
+
 **Pada UML MOJOKERTO** </br>
+
 a. Jalankan perintah `mkdir /etc/squid/pages/` </br>
+
 b. Setelah itu download file dengan cara menjalakan perintah `wget 10.151.36.202/ERR_ACCESS_DENIED` </br>
+
 c. Copy file yang didownload masukkan ke directory /etc/squid/pages/ `cp -r /ERR_ACCESS_DENIED /etc/squid/pages/` </br>
-d. Tambahkan pada file /etc/squid/squid.conf 
-</br>
+
+d. Tambahkan konfigurasi pada file /etc/squid/squid.conf </br>
 
 ```
 error_directory /etc/squid/pages/
 ```
 
 </br>
+
 e. Jalankan perintah `service squid restart` </br>
+
 f. Testing </br>
 
 12. Karena Bu Meguri dan Anri adalah tipe orang pelupa, maka untuk memudahkan mereka, Anri memiliki ide ketika menggunakan proxy cukup dengan mengetikkan domain janganlupa-ta.yyy.pw dan memasukkan port 8080. </br>
+
 Keterangan : yyy adalah nama kelompok masing-masing. Contoh: janganlupa-ta.c01.pw </br>
 
 Jawab : </br>
-Pada UML MALANG </br>
-a. Jalankan perintah `nano /etc/bind/modul3/janganlupa-ta.d01.pw` 
-</br>
+
+**Pada UML MALANG** </br>
+
+a. Jalankan perintah `nano /etc/bind/modul3/janganlupa-ta.d01.pw` </br>
 
 ```
 ;
@@ -174,8 +205,8 @@ $TTL    604800
 ```
 
 </br>
-b. jalankan perintah nano `/etc/bind/named.conf.local` 
-</br>
+
+b. jalankan perintah `nano /etc/bind/named.conf.local` </br>
 
 ```
 //
@@ -192,5 +223,7 @@ zone "janganlupa-ta.d01.pw"{
 ```
 
 </br>
+
 c. jalankan perintah `service bind9 restart` </br>
+
 d. Testing </br>
