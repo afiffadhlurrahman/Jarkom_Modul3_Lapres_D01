@@ -6,6 +6,12 @@ Nama Anggota :
 
 Session :
 - [DHCP](#dhcp)
+   * [No 1](#nomor-1)
+   * [No 2](#nomor-2)
+   * [No 3](#nomor-3)
+   * [No 4](#nomor-4)
+   * [No 5](#nomor-5)
+   * [No 6](#nomor-6)
 - [Proxy Server](#proxy-server)
    * [No 7](#nomor-7)
    * [No 8](#nomor-8)
@@ -16,17 +22,370 @@ Session :
 
 ## DHCP
 
+#### Nomor 1
 **1. Membuat Topologi** </br>
 
+Jawab : </br>
+
+a. Jalankan Xming kemudian jalankan PuTTY seperti pada [Modul Pengenalan UML](https://github.com/arsitektur-jaringan-komputer/Modul-Jarkom/tree/modul-uml) </br>
+
+b. Setelah login, buat file script dengan ekstensi **.sh** yang akan digunakan untuk menyimpan script membuat **router**, **switch**, dan **clienT**. Misalkan bernama **topo.sh**. Sehingga ketik `nano topo.sh`</br>
+
+c. Sintaks yang digunakan adalah sebagai berikut: </br>
+
+![No 1 Buat topo.sh](/img/1-topo.png)
+
+```
+# Switch
+uml_switch -unix switch1 > /dev/null < /dev/null &
+uml_switch -unix switch2 > /dev/null < /dev/null &
+uml_switch -unix switch3 > /dev/null < /dev/null &
+
+# Router
+xterm -T SURABAYA -e linux ubd0=SURABAYA,jarkom umid=SURABAYA eth0=tuntap,,,10.151.78.9 eth1=daemon,,,switch1 eth2=daemon,,,switch3 eth3=daemon,,,switch2  mem=256M &
+
+# Server
+xterm -T MALANG -e linux ubd0=MALANG,jarkom umid=MALANG eth0=daemon,,,switch2 mem=160M &
+xterm -T MOJOKERTO -e linux ubd0=MOJOKERTO,jarkom umid=MOJOKERTO eth0=daemon,,,switch2 mem=128M &
+xterm -T TUBAN -e linux ubd0=TUBAN,jarkom umid=TUBAN eth0=daemon,,,switch2 mem=128M &
+
+# Klien
+xterm -T SIDOARJO -e linux ubd0=SIDOARJO,jarkom umid=SIDOARJO eth0=daemon,,,switch1 mem=64M &
+xterm -T GRESIK -e linux ubd0=GRESIK,jarkom umid=GRESIK eth0=daemon,,,switch1 mem=64M &
+xterm -T BANYUWANGI -e linux ubd0=BANYUWANGI,jarkom umid=BANYUWANGI eth0=daemon,,,switch3 mem=64M &
+xterm -T MADIUN -e linux ubd0=MADIUN,jarkom umid=MADIUN eth0=daemon,,,switch3 mem=64M &
+
+```
+
+</br>
+
+d. Jalankan script **topo.sh** dengan perintah `bash topologi.sh`. Kemudian login pada setiap UML. </br>
+
+e. Pada router **SURABAYA** lakukan setting sysctl dengan mengetikkan perintah `nano /etc/sysctl.conf` </br>
+
+f. Hilangkan tanda pagar (#) pada bagian `net.ipv4.ip_forward=1`. Lalu ketikkan `sysctl -p` untuk mengaktifkan perubahan yang ada. </br>
+
+![No 1 sysctl](/img/1-sysctl.png)
+
+g. Setting IP pada setiap UML dengan mengetikkan `nano /etc/network/interfaces`. Lalu setting IP-nya sebagai berikut: </br>
+
+**SURABAYA (Sebagai Router)** </br>
+
+```
+auto eth0
+iface eth0 inet static
+address 10.151.78.10
+netmask 255.255.255.252
+gateway 10.151.78.9
+
+auto eth1
+iface eth1 inet static
+address 192.168.0.1
+netmask 255.255.255.0
+
+auto eth2
+iface eth2 inet static
+address 192.168.1.1
+netmask 255.255.255.0
+
+auto eth3
+iface eth3 inet static
+address 10.151.79.17
+netmask 255.255.255.248
+```
+
+**MALANG (DNS Server)** </br>
+
+```
+auto eth0
+iface eth0 inet static
+address 10.151.79.18
+netmask 255.255.255.248
+gateway 10.151.79.17
+```
+
+**MOJOKERTO (Proxy Server)** </br>
+
+```
+auto eth0
+iface eth0 inet static
+address 10.151.79.19
+netmask 255.255.255.248
+gateway 10.151.79.17
+```
+
+**TUBAN (DHCP Server)** </br>
+
+```
+auto eth0
+iface eth0 inet static
+address 10.151.79.20
+netmask 255.255.255.248
+gateway 10.151.79.17
+```
+
+**SIDOARJO (Client)** </br>
+
+```
+auto eth0
+iface eth0 inet static
+address 192.168.0.2
+netmask 255.255.255.0
+gateway 192.168.0.1
+```
+
+**GRESIK (Client)** </br>
+
+```
+auto eth0
+iface eth0 inet static
+address 192.168.0.3
+netmask 255.255.255.0
+gateway 192.168.0.1
+```
+
+**BANYUWANGI (Client)** </br>
+
+```
+auto eth0
+iface eth0 inet static
+address 192.168.1.2
+netmask 255.255.255.0
+gateway 192.168.1.1
+```
+
+**MADIUN (Client)** </br>
+
+```
+auto eth0
+iface eth0 inet static
+address 192.168.1.3
+netmask 255.255.255.0
+gateway 192.168.1.1
+```
+
+h. Restart network dengan mengetikkan `service networking restart` di setiap UML. </br>
+
+i. Ketikkan `iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE -s 192.168.0.0/16` pada router SURABAYA. </br>
+
+k. Export proxy pada setiap UML dengan sintaks seperti di bawah ini: </br>
+```
+export http_proxy=”http://[username-vpn]:[password]@proxy.its.ac.id:8080”
+export https_proxy=”http://[username-vpn]:[password]@proxy.its.ac.id:8080”
+export ftp_proxy=”http://[username-vpn]:[password]@proxy.its.ac.id:8080”
+```
+
+</br>
+
+Namun, kami membuat file **proxy.sh** yang berisi sintaks tersebut pada setiap UML. Sehingga tinggal mengetik `source proxy.sh` ketika ingin export proxy.
+
+#### Nomor 2
 **2. SURABAYA ditunjuk sebagai perantara (DHCP Relay) antara DHCP Server dan client.**  </br>
 
+Jawab : </br>
+
+**Pada UML TUBAN** </br>
+
+a. Install **isc-dhcp-server** dengan perintah `apt-get install isc-dhcp-server`. </br>
+
+b. Kemudian jalankan perintah `nano /etc/dhcp/dhcpd.conf`, edit rules menjadi sebagai berikut: </br>
+
+![No 2 config DHCP Server](/img/2-config-tuban-1.png)
+
+![No 2 config DHCP Server](/img/2-config-tuban-2.png)
+
+```
+subnet 10.151.79.16 netmask 255.255.255.248 {   #adalah subnet network server dan router# 
+  range 10.151.79.18 10.151.79.20;
+  option routers 10.151.79.17;
+  option broadcast-address 10.151.79.255;
+  option domain-name-servers 10.151.79.18, 202.46.129.2;
+}
+
+#subnet1 5menit
+subnet 192.168.0.0 netmask 255.255.255.0 {  #adalah subnet network router dan client# 
+  range 192.168.0.10 192.168.0.100;
+  range 192.168.0.110 192.168.0.200;
+  option routers 192.168.0.1;
+  option broadcast-address 192.168.0.255;
+  option domain-name-servers 10.151.79.18, 202.46.129.2;
+  default-lease-time 300;
+  max-lease-time 3000;
+}
+
+#subnet3 10menit
+subnet 192.168.1.0 netmask 255.255.255.0 {  #adalah subnet network router dan client# 
+  range 192.168.1.50 192.168.1.70;
+  option routers 192.168.1.1;
+  option broadcast-address 192.168.1.255;
+  option domain-name-servers 10.151.79.18, 202.46.129.2;
+  default-lease-time 600;
+  max-lease-time 6000;
+}
+```
+
+</br>
+
+c. Save kemudian restart dengan perintah `service isc-dhcp-server restart`. </br>
+
+**Pada UML SURABAYA** </br>
+
+a. Install **isc-dhcp-relay** dengan perintah `apt-get install isc-dhcp-relay`. </br>
+
+b. Kemudian jalankan perintah `nano /etc/default/isc-dhcp-relay`, edit menjadi sebagai berikut: </br>
+
+![No 2 config DHCP Relay](/img/2-config-sby.png)
+
+```
+SERVERS="10.151.79.20"
+```
+
+</br>
+
+```
+INTERFACES="eth1 eth2 eth3"
+```
+
+</br>
+
+c. Save kemudian restart dengan perintah `service isc-dhcp-relay restart`. </br>
+
+#### Nomor 3
 **3. Client pada subnet 1 mendapatkan range IP dari 192.168.0.10 sampai 192.168.0.100 dan 192.168.0.110 sampai 192.168.0.200.**  </br>
 
+Jawab : </br>
+
+**Pada UML TUBAN** </br>
+
+a. Jalankan perintah `nano /etc/dhcp/dhcpd.conf`</br>
+
+b. Pada `subnet 192.168.0.0 netmask 255.255.255.0` edit `range` menjad: </br>
+
+```
+range 192.168.0.10 192.168.0.100;
+range 192.168.0.110 192.168.0.200;
+```
+
+Sehingga akan terlihat seperti berikut:
+
+![No 2 config DHCP Server](/img/2-config-tuban-1.png)
+
+```
+subnet 192.168.0.0 netmask 255.255.255.0 {  #adalah subnet network router dan client# 
+  range 192.168.0.10 192.168.0.100;
+  range 192.168.0.110 192.168.0.200;
+  option routers 192.168.0.1;
+  option broadcast-address 192.168.0.255;
+  option domain-name-servers 10.151.79.18, 202.46.129.2;
+  default-lease-time 300;
+  max-lease-time 3000;
+}
+```
+
+</br>
+
+#### Nomor 4
 **4. Client pada subnet 3 mendapatkan range IP dari 192.168.1.50 sampai 192.168.1.70.**  </br>
 
+Jawab : </br>
+
+**Pada UML TUBAN** </br>
+
+a. Jalankan perintah `nano /etc/dhcp/dhcpd.conf`</br>
+
+b. Pada `subnet 192.168.1.0 netmask 255.255.255.0` edit `range` menjad: </br>
+
+```
+range 192.168.1.50 192.168.1.70;
+```
+
+Sehingga akan terlihat seperti berikut:
+
+![No 2 config DHCP Server](/img/2-config-tuban-1.png)
+
+```
+subnet 192.168.1.0 netmask 255.255.255.0 {  #adalah subnet network router dan client# 
+  range 192.168.1.50 192.168.1.70;
+  option routers 192.168.1.1;
+  option broadcast-address 192.168.1.255;
+  option domain-name-servers 10.151.79.18, 202.46.129.2;
+  default-lease-time 600;
+  max-lease-time 6000;
+}
+```
+
+</br>
+
+#### Nomor 5
 **5. Client mendapatkan DNS Malang dan DNS 202.46.129.2 dari DHCP**  </br>
 
+Jawab : </br>
+
+**Pada UML TUBAN** </br>
+
+a. Jalankan perintah `nano /etc/dhcp/dhcpd.conf`. Pada setiap **subnet** edit `option domain-name-servers`. </br>
+
+b. Sehingga sintaks menjadi seperti berikut</br>
+
+```
+option domain-name-servers 10.151.79.18, 202.46.129.2;
+```
+
+</br>
+
+#### Nomor 6
 **6. Client di subnet 1 mendapatkan peminjaman alamat IP selama 5 menit, sedangkan client pada subnet 3 mendapatkan peminjaman IP selama 10 menit.**  </br>
+
+Jawab : </br>
+
+**Pada UML TUBAN** </br>
+
+a. Jalankan perintah `nano /etc/dhcp/dhcpd.conf`</br>
+
+b. Pada **Subnet 1** tambahkan</br>
+
+```
+default-lease-time 300;
+max-lease-time 3000;
+```
+
+</br>
+
+b. Pada **Subnet 2** tambahkan</br>
+
+```
+default-lease-time 600;
+  max-lease-time 6000;
+```
+
+</br>
+
+c. Sehingga menjadi seperti berikut</br>
+
+```
+#subnet1 5menit
+subnet 192.168.0.0 netmask 255.255.255.0 {  #adalah subnet network router dan client# 
+  range 192.168.0.10 192.168.0.100;
+  range 192.168.0.110 192.168.0.200;
+  option routers 192.168.0.1;
+  option broadcast-address 192.168.0.255;
+  option domain-name-servers 10.151.79.18, 202.46.129.2;
+  default-lease-time 300;
+  max-lease-time 3000;
+}
+
+#subnet3 10menit
+subnet 192.168.1.0 netmask 255.255.255.0 {  #adalah subnet network router dan client# 
+  range 192.168.1.50 192.168.1.70;
+  option routers 192.168.1.1;
+  option broadcast-address 192.168.1.255;
+  option domain-name-servers 10.151.79.18, 202.46.129.2;
+  default-lease-time 600;
+  max-lease-time 6000;
+}
+```
+
+</br>
 
 ## Proxy Server
 
