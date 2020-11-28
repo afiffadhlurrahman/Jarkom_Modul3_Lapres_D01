@@ -321,7 +321,7 @@ range 192.168.1.50 192.168.1.70;
 
 Sehingga akan terlihat seperti berikut:
 
-![No 2 config DHCP Server](/img/2-config-tuban-1.png)
+![No 2 config DHCP Server](/img/2-config-tuban-2.png)
 
 ```
 subnet 192.168.1.0 netmask 255.255.255.0 {  #adalah subnet network router dan client# 
