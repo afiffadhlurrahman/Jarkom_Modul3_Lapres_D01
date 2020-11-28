@@ -442,11 +442,10 @@ auth_param basic credentialsttl 2 hours
 auth_param basic casesensitive on
 acl USERS proxy_auth REQUIRED
 
-http_access deny all
-
 http_access allow USERS JADWALDEL !REDIRECT
 http_access allow USERS JADWALSEM !REDIRECT
 http_access allow USERS JADWALSEMM !REDIRECT
+http_access deny all
 ```
 
 </br>
