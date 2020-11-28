@@ -239,9 +239,6 @@ b. Kemudian jalankan perintah `nano /etc/default/isc-dhcp-relay`, edit menjadi s
 ```
 SERVERS="10.151.79.20"
 ```
-
-</br>
-
 ```
 INTERFACES="eth1 eth2 eth3"
 ```
@@ -249,6 +246,29 @@ INTERFACES="eth1 eth2 eth3"
 </br>
 
 c. Save kemudian restart dengan perintah `service isc-dhcp-relay restart`. </br>
+
+**Pada Setiap Client** </br>
+
+a. Ketik `nano /etc/network/interfaces`</br>
+
+b. Comment pada konfigursasi IP statis. Tambahkan </br>
+
+```
+auto eth0
+iface eth0 inet dhcp
+```
+
+</br>
+
+![No 2 interface client](/img/2-interface-client.png)
+
+c. Kemudian restart dengan `service networking restart` </br>
+
+d. Testing </br>
+
+![No 2 ifconfig client](/img/2-ifconfig-client.png)
+
+</br>
 
 #### Nomor 3
 **3. Client pada subnet 1 mendapatkan range IP dari 192.168.0.10 sampai 192.168.0.100 dan 192.168.0.110 sampai 192.168.0.200.**  </br>
@@ -431,6 +451,10 @@ http_access allow USERS JADWALSEMM !REDIRECT
 
 </br>
 
+![No 7 Config 1](/img/7-config-1.png)
+
+![No 7 Config 2](/img/7-config-2.png)
+
 e. Jalankan perintah `service squid restart` </br>
 f. Nyalakan proxy di setting windows </br>
 
@@ -458,6 +482,8 @@ acl JADWALDEL time TW 13:00-18:00
 
 </br>
 
+![No 8 acl](/img/acl-config.png)
+
 b. Tambahkan konfigurasi dengan menjalankan perintah `nano /etc/squid/squid.conf` </br>
 
 ```
@@ -466,6 +492,8 @@ http_access allow USERS JADWALDEL !REDIRECT # konfigurasi sudah ditambahkan pada
 ```
 
 </br>
+
+![No 8 config](/img/8-config.png)
 
 c. Jalankan perintah `service squid restart` </br>
 
@@ -499,6 +527,8 @@ acl JADWALSEMM time WHF 00:00-09:00
 
 </br>
 
+![No 9 acl](/img/acl-config.png)
+
 b. Tambahkan konfigurasi dengan menjalankan perintah `nano /etc/squid/squid.conf` </br>
 
 ```
@@ -507,6 +537,8 @@ http_access allow USERS JADWALSEMM !REDIRECT # konfigurasi sudah ditambahkan pad
 ```
 
 </br>
+
+![No 9 config](/img/9-config.png)
 
 c. Jalankan perintah `service squid restart` </br>
 
@@ -540,6 +572,8 @@ google.com
 
 </br>
 
+![No 10 ban.acl](/img/10-acl.png)
+
 b. Tambahkan konfigurasi dengan menjalankan perintah `nano /etc/squid/squid.conf` </br>
 
 ```
@@ -548,6 +582,8 @@ deny_info http://monta.if.its.ac.id/ REDIRECT
 ```
 
 </br>
+
+![No 10 config](/img/10-config.png)
 
 c. Jalankan perintah `service squid restart` </br>
 
@@ -582,6 +618,8 @@ error_directory /etc/squid/pages/
 ```
 
 </br>
+
+![No 11 config](/img/11-config.png)
 
 e. Jalankan perintah `service squid restart` </br>
 
@@ -623,6 +661,8 @@ $TTL    604800
 
 </br>
 
+![No 12](/img/no12-1.png)
+
 b. jalankan perintah `nano /etc/bind/named.conf.local` </br>
 
 ```
@@ -640,6 +680,8 @@ zone "janganlupa-ta.d01.pw"{
 ```
 
 </br>
+
+![No 12](/img/no12-2.png)
 
 c. jalankan perintah `service bind9 restart` </br>
 
